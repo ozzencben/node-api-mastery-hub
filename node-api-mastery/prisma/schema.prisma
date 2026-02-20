@@ -11,21 +11,18 @@ model User {
   id        String @id @default(uuid())
   email     String   @unique
   name      String?
+  phone     String?   @unique
   
   createdAt DateTime @default(now())
 
   transactions Transaction[]
   recurringTransactions RecurringTransaction[]
+
+  businesses Business[]
+  appointments Appointment[]
 }
 
-model ApiLog {
-  id        Int      @id @default(autoincrement())
-  method    String
-  endpoint  String
-  status    Int
-  duration  Int
-  createdAt DateTime @default(now())
-}
+// FINANCE START
 
 model Transaction {
   id                String     @id @default(uuid())
@@ -88,3 +85,69 @@ enum FrequencyType {
   MONTHLY
   WEEKLY
 }
+
+// FINANCE END
+// -------------------------------------------------------------------
+// BUSINESS START
+
+model Business {
+  id          String   @id @default(uuid())
+  name        String
+  category    String   // Örn: Berber, Klinik, Halı Saha
+  description String?
+  ownerId     String
+  owner       User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  
+  services    Service[]
+  appointments Appointment[]
+
+  // Çalışma saatleri (Basit tutmak için JSON veya String tutabiliriz)
+  workingHours String? // Örn: "09:00-18:00"
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Service {
+  id          String   @id @default(uuid())
+  name        String   // Örn: Saç Kesimi
+  duration    Int      // Dakika cinsinden: 30, 60, 90
+  price       Decimal  @db.Decimal(10, 2)
+  description String?
+  
+  businessId  String
+  business    Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  
+  appointments Appointment[]
+}
+
+model Appointment {
+  id          String            @id @default(uuid())
+  startTime   DateTime          // Randevu başlangıç
+  endTime     DateTime          // startTime + Service.duration
+  
+  userId      String?
+  user        User?              @relation(fields: [userId], references: [id])
+
+  guestName  String?
+  guestPhone String?
+
+  status      AppointmentStatus @default(PENDING)
+
+  businessId  String
+  business    Business          @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  
+  serviceId   String
+  service     Service           @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime          @default(now())
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+// BUSINESS END

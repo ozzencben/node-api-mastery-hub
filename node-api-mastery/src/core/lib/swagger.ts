@@ -12,6 +12,7 @@ extendZodWithOpenApi(z);
 // Tüm şemaların ve yolların kaydedileceği defter
 export const userRegistry = new OpenAPIRegistry();
 export const financeRegistry = new OpenAPIRegistry();
+export const businnessRegistry = new OpenAPIRegistry();
 
 const renderUrl =
   process.env.RENDER_URL || "https://node-api-mastery-hub.onrender.com";
@@ -92,6 +93,70 @@ export const getFinanceSpec = () => {
     info: {
       title: "Finance Management API Specification",
       description: apiDescription,
+      version: "1.0.0",
+    },
+    servers: [
+      {
+        url: renderUrl,
+        description: "Production Server",
+      },
+      {
+        url: "http://localhost:5000",
+        description: "Development Server",
+      },
+    ],
+  });
+};
+
+// BUSINESS SPECIFICATION
+export const businessDesc = `
+## 🏢 Business & Service Management Guide
+
+This module manages business entities and their associated services. Each business must be owned by a valid **User**, and services are linked directly to a **Business**.
+
+---
+
+### ⚠️ Critical Rules & Parameters
+
+1. **Authentication & Ownership:**
+   - The system uses the **x-user-id** header to identify the requester.
+   - **Ownership Enforcement:** For **Update** and **Delete** operations, the system verifies that the **x-user-id** in the header matches the **ownerId** of the business. You cannot modify or delete resources you do not own.
+
+2. **Business Configuration:**
+   - **Categories:** Only **Technology**, **Health**, **Beauty**, **Education**, and **Sports** are accepted.
+   - **Working Hours:** Must follow the **HH:mm-HH:mm** format (e.g., 09:00-18:00).
+
+3. **Service Rules:**
+   - **Duration:** Mandatory field representing completion time in **minutes**. This is the backbone of the upcoming Appointment system to prevent scheduling overlaps.
+   - **Pricing:** Handled as positive numbers. Ensure precision for financial accuracy.
+
+---
+
+### 🛠️ Operations Workflow
+
+1. **Management (CRUD):**
+   - **Update:** Use **PATCH** to modify specific fields. The system verifies business ownership even for service updates.
+   - **Delete:** Use **DELETE** to remove resources. Warning: Deleting a business will cascade and remove all its services.
+
+2. **Testing Workflow:**
+   - **Step 1:** Create a Business and copy its **id**.
+   - **Step 2:** Use that **businessId** to create Services.
+   - **Step 3:** List your businesses using **GET /api/businesses** to see everything in one place.
+
+---
+
+### 🚀 Roadmap Update
+- **Next Phase:** **Appointment System.** We will implement the booking logic where **Service.duration** and **Business.workingHours** will be used to calculate available slots.
+- **Current Status:** All Business and Service CRUD operations are validated and secured.
+`;
+
+export const getBusinessSpec = () => {
+  const generator = new OpenApiGeneratorV3(businnessRegistry.definitions);
+  return generator.generateDocument({
+    openapi: "3.0.0",
+    info: {
+      title: "Business Management API Specification",
+      description: businessDesc,
       version: "1.0.0",
     },
     servers: [

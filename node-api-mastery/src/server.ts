@@ -6,11 +6,16 @@ import helmet from "helmet";
 import { startCronJobs } from "./core/services/cron.service";
 
 import { requestLogger } from "./core/middlewares/logger";
-import { getFinanceSpec, getUserSpec } from "./core/lib/swagger";
+import {
+  getFinanceSpec,
+  getUserSpec,
+  getBusinessSpec,
+} from "./core/lib/swagger";
 
 import UserRoutes from "./modules/user/user.routes";
 import FinanceRoutes from "./modules/finance/finance.routes";
 import RecurringFrequencyRoutes from "./modules/finance/recurringTransaction.routes";
+import BusinessRoutes from "./modules/business/business.routes";
 
 import { errorHandler } from "./core/middlewares/errorHandler";
 import swaggerUi from "swagger-ui-express";
@@ -49,10 +54,21 @@ app.use(
   },
 );
 
+// /api-docs/business
+app.use(
+  "/api-docs/business",
+  swaggerUi.serve,
+  (req: Request, res: Response, next: NextFunction) => {
+    const spec = getBusinessSpec();
+    swaggerUi.setup(spec)(req, res, next);
+  },
+);
+
 // Routes
 app.use("/api/users", UserRoutes);
 app.use("/api/finances", FinanceRoutes);
 app.use("/api/recurring-transactions", RecurringFrequencyRoutes);
+app.use("/api/businesses", BusinessRoutes);
 
 // Error Handler Middleware
 app.use(errorHandler);

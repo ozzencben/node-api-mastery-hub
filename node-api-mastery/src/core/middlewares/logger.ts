@@ -15,18 +15,18 @@ export const requestLogger = (
     const { method, url, ip } = req;
     const { statusCode } = res;
 
-    try {
-      await prisma.apiLog.create({
-        data: {
-          method: method,
-          endpoint: url,
-          status: statusCode,
-          duration: duration,
-        },
-      });
-    } catch (error) {
-      console.error(error);
-    }
+    // try {
+    //   await prisma.apiLog.create({
+    //     data: {
+    //       method: method,
+    //       endpoint: url,
+    //       status: statusCode,
+    //       duration: duration,
+    //     },
+    //   });
+    // } catch (error) {
+    //   console.error(error);
+    // }
 
     if (statusCode >= 500) {
       console.warn(
