@@ -6,10 +6,11 @@
   "scripts": {
     "start": "node dist/server.js",
     "dev": "nodemon --exec ts-node src/server.ts",
-    "build": "tsc",
+    "build": "prisma generate && tsc",
     "generate": "prisma generate",
     "studio": "prisma studio",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "gen:readme": "node scripts/generateReadme.js"
   },
   "keywords": [],
   "author": "",
