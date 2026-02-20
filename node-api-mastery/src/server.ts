@@ -27,7 +27,7 @@ app.use(express.json());
 // Logger Middleware
 app.use(requestLogger);
 
-// Swagger Routes
+// Swagger Routess
 
 // /api-docs/users
 app.use(
