@@ -8,7 +8,7 @@ export const RecurringTransactionSchema = financeRegistry.register(
     id: z
       .string()
       .uuid()
-      .openapi({ example: "b5f9733e-16a2-461e-ac9a-c0d60425ff35" }),
+      .openapi({ example: "987cdba2-bd96-41be-8cd4-fe60074810a8" }),
     amount: z.number().min(0.01).openapi({ example: 10000 }),
     type: z.enum(TransactionType).openapi({ example: "EXPENSE" }),
     category: z.enum(Category).openapi({ example: "RENT" }),

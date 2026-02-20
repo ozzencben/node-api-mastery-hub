@@ -8,7 +8,7 @@ export const TransactionSchema = financeRegistry.register(
     id: z
       .string()
       .uuid()
-      .openapi({ example: "b5f9733e-16a2-461e-ac9a-c0d60425ff35" }),
+      .openapi({ example: "987cdba2-bd96-41be-8cd4-fe60074810a8" }),
     amount: z.number().min(0.01).openapi({ example: "1200.99" }),
     type: z.enum(TransactionType).openapi({ example: "INCOME" }),
     category: z.enum(Category).openapi({ example: "OTHER" }),
@@ -98,7 +98,7 @@ export const deleteTransactionSchema = z.object({
     userId: z
       .string()
       .uuid()
-      .openapi({ example: "1e2107f6-ece4-4418-9a04-51e1b7b2eba9" }),
+      .openapi({ example: "987cdba2-bd96-41be-8cd4-fe60074810a8" }),
     transactionId: z
       .string()
       .uuid()
@@ -117,7 +117,7 @@ export const updateTransactionSchema = z.object({
     userId: z
       .string()
       .uuid()
-      .openapi({ example: "1e2107f6-ece4-4418-9a04-51e1b7b2eba9" }),
+      .openapi({ example: "987cdba2-bd96-41be-8cd4-fe60074810a8" }),
     transactionId: z
       .string()
       .uuid()
