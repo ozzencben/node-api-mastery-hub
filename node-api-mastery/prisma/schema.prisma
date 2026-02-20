@@ -1,0 +1,90 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String @id @default(uuid())
+  email     String   @unique
+  name      String?
+  
+  createdAt DateTime @default(now())
+
+  transactions Transaction[]
+  recurringTransactions RecurringTransaction[]
+}
+
+model ApiLog {
+  id        Int      @id @default(autoincrement())
+  method    String
+  endpoint  String
+  status    Int
+  duration  Int
+  createdAt DateTime @default(now())
+}
+
+model Transaction {
+  id                String     @id @default(uuid())
+
+  amount            Float    
+  type              TransactionType
+  category          Category
+  description       String?
+  date              DateTime      @default(now())
+
+  createdAt         DateTime      @default(now())
+
+  userId            String
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model RecurringTransaction {
+  id           String          @id @default(uuid())
+  amount       Float
+  type         TransactionType // INCOME veya EXPENSE
+  category     Category
+  description  String?
+  
+  // Tekrarlama Kuralı
+  frequency    FrequencyType          // "MONTHLY", "WEEKLY"
+  dayOfMonth   Int?            // Ayın kaçıncı günü? (1-31)
+  dayOfWeek    Int?            // Haftanın kaçıncı günü? (0-6)
+  
+  // Kontrol Alanları
+  isActive     Boolean         @default(true)
+  lastRunDate  DateTime?       // En son ne zaman otomatik işlem oluşturuldu?
+  startDate    DateTime        @default(now())
+  
+  // İlişki
+  userId       String
+  user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+}
+
+enum Category {
+  FOOD        // Yemek, Market, Restoran
+  TRANSPORT   // Akaryakıt, Toplu Taşıma, Taksi
+  RENT        // Kira Ödemeleri
+  UTILITIES   // Faturalar (Elektrik, Su, İnternet)
+  SALARY      // Maaş (Genelde INCOME tipi için)
+  SHOPPING    // Giyim, Teknoloji, Kişisel harcamalar
+  HEALTH      // Eczane, Hastane, Sigorta
+  ENTERTAINMENT // Sinema, Oyun, Hobiler
+  OTHER       
+}
+
+enum FrequencyType {
+  MONTHLY
+  WEEKLY
+}
