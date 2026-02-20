@@ -13,7 +13,8 @@ extendZodWithOpenApi(z);
 export const userRegistry = new OpenAPIRegistry();
 export const financeRegistry = new OpenAPIRegistry();
 
-const renderUrl = process.env.RENDER_URL || "https://node-api-mastery-hub.onrender.com";
+const renderUrl =
+  process.env.RENDER_URL || "https://node-api-mastery-hub.onrender.com";
 
 // USER SPECIFICATION
 export const getUserSpec = () => {
@@ -27,6 +28,11 @@ export const getUserSpec = () => {
     servers: [
       {
         url: renderUrl,
+        description: "Production Server",
+      },
+      {
+        url: "http://localhost:5000",
+        description: "Development Server",
       },
     ],
   });
@@ -91,6 +97,11 @@ export const getFinanceSpec = () => {
     servers: [
       {
         url: renderUrl,
+        description: "Production Server",
+      },
+      {
+        url: "http://localhost:5000",
+        description: "Development Server",
       },
     ],
   });
