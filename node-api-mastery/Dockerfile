@@ -24,4 +24,5 @@ RUN npm run build
 
 EXPOSE 5000
 
-CMD ["npm", "start"]
+# Önce migrationları güvenli bir şekilde uygular, başarılı olursa uygulamayı başlatır.
+CMD npx prisma migrate deploy && npm start
