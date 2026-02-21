@@ -1,4 +1,7 @@
-const renderUrl = process.env.RENDER_URL || "http://localhost:5000";
+const renderUrl =
+  process.env.NODE_ENV === "production"
+    ? "https://node-api-mastery-hub.onrender.com"
+    : "http://localhost:5000";
 
 export const modules = [
   {
