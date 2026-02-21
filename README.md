@@ -28,23 +28,34 @@ A centralized Cron Service handles background tasks like financial automation, e
 
 Explore our specialized API modules through their dedicated interactive documentation:
 
-### 👤 User Management System
+### 🏢 Business & Appointment System (New!)
 
-- **Description:** Handles identity, user profiles, and foundational security logic.
-- **Interactive Docs:** [`/api-docs/users`](https://node-api-mastery-hub.onrender.com/api-docs/users)
+- **Description:** A robust engine for service-based businesses to manage bookings and daily operations.
+- **Interactive Docs:** [`/api-docs/business`](https://node-api-mastery-hub.onrender.com/api-docs/business)
 - **Key Features:**
-  - User CRUD operations
-  - Schema-based validation
-  - Modular route protection
+  - **Smart Availability Engine:** Calculates real-time bookable slots based on business working hours and service durations.
+  - **Overlap Prevention:** Automatically blocks conflicting appointments to ensure data integrity.
+  - **Admin Dashboard:** Provides business owners with daily stats (Pending/Confirmed/Cancelled) and estimated revenue calculations.
+  - **Flexible Booking:** Supports both authenticated user bookings and guest checkout with phone/name validation.
+  - **Business Rules Enforcement:** Implements critical logic like the "2-Hour Cancellation Rule" to protect service providers.
+  - **Advanced Discovery:** Filtered business listing with full pagination support.
 
 ### 💰 Finance & Automation System
 
 - **Description:** A high-performance engine for personal finance tracking and subscription automation.
 - **Interactive Docs:** [`/api-docs/finances`](https://node-api-mastery-hub.onrender.com/api-docs/finances)
 - **Key Features:**
-  - Real-time Balance & Projection logic
-  - Automated Recurring Transaction Engine
-  - Advanced Pagination & Normalized Filtering
+  - Real-time Balance & Projection logic.
+  - Automated Recurring Transaction Engine.
+  - Advanced Pagination & Normalized Filtering.
+
+### 👤 User Management System
+
+- **Description:** Handles identity, user profiles, and foundational security logic.
+- **Interactive Docs:** [`/api-docs/users`](https://node-api-mastery-hub.onrender.com/api-docs/users)
+- **Key Features:**
+  - Full User CRUD operations.
+  - Modular route protection using identity headers.
 
 ---
 

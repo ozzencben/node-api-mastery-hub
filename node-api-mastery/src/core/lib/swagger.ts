@@ -110,44 +110,53 @@ export const getFinanceSpec = () => {
 
 // BUSINESS SPECIFICATION
 export const businessDesc = `
-## 🏢 Business & Service Management Guide
+## 🏢 Advanced Business & Appointment Engine
 
-This module manages business entities and their associated services. Each business must be owned by a valid **User**, and services are linked directly to a **Business**.
+This module serves as the core engine for service-based businesses. It handles everything from **Business Management** and **Service Definitions** to **Smart Appointment Scheduling** and **Admin Insights**.
 
 ---
 
-### ⚠️ Critical Rules & Parameters
+### ⚠️ Core Logic & Business Rules
 
-1. **Authentication & Ownership:**
-   - The system uses the **x-user-id** header to identify the requester.
-   - **Ownership Enforcement:** For **Update** and **Delete** operations, the system verifies that the **x-user-id** in the header matches the **ownerId** of the business. You cannot modify or delete resources you do not own.
+1. **Identity & Security:**
+   - **User Identity:** Identification is handled via the **x-user-id** header.
+   - **Ownership Control:** Critical operations (Update/Delete/Dashboard) strictly verify if the **x-user-id** matches the **ownerId** of the business.
 
-2. **Business Configuration:**
-   - **Categories:** Only **Technology**, **Health**, **Beauty**, **Education**, and **Sports** are accepted.
-   - **Working Hours:** Must follow the **HH:mm-HH:mm** format (e.g., 09:00-18:00).
+2. **Smart Scheduling Logic:**
+   - **Working Hours:** Must follow the **HH:mm-HH:mm** format (e.g., 09:00-22:00). Appointments cannot be booked outside these hours.
+   - **Automatic Overlap Prevention:** The system calculates the **endTime** using **Service.duration**. It automatically blocks time slots that overlap with existing **PENDING** or **CONFIRMED** appointments.
+   - **Availability Engine:** The \`/availability\` endpoint dynamically calculates bookable slots for any given date, considering both business hours and existing bookings.
 
-3. **Service Rules:**
-   - **Duration:** Mandatory field representing completion time in **minutes**. This is the backbone of the upcoming Appointment system to prevent scheduling overlaps.
-   - **Pricing:** Handled as positive numbers. Ensure precision for financial accuracy.
+3. **Appointment Life Cycle:**
+   - **Status Flow:** Appointments move through states: \`PENDING\` ➔ \`CONFIRMED\` / \`CANCELLED\` ➔ \`COMPLETED\`.
+   - **The 2-Hour Rule:** Users can cancel their own appointments only if there are **more than 2 hours** remaining. Otherwise, they must contact the business directly.
 
 ---
 
 ### 🛠️ Operations Workflow
 
-1. **Management (CRUD):**
-   - **Update:** Use **PATCH** to modify specific fields. The system verifies business ownership even for service updates.
-   - **Delete:** Use **DELETE** to remove resources. Warning: Deleting a business will cascade and remove all its services.
+#### 🔹 For Businesses (Owners)
+1. **Setup:** Create a Business and define Services (with duration and price).
+2. **Management:** Use the **Dashboard** (\`/dashboard\`) to see daily stats, pending requests, and estimated revenue.
+3. **Action:** Monitor and update appointment statuses via the Business Appointment List.
 
-2. **Testing Workflow:**
-   - **Step 1:** Create a Business and copy its **id**.
-   - **Step 2:** Use that **businessId** to create Services.
-   - **Step 3:** List your businesses using **GET /api/businesses** to see everything in one place.
+#### 🔹 For Users (Customers)
+1. **Discovery:** Use \`/list\` with filters (category, search, pagination) to find businesses.
+2. **Details:** Use \`/detail/{id}\` to view a business's full service menu.
+3. **Booking:** Check availability and book a slot (Registered users or Guests).
+4. **Tracking:** View personal appointment history and manage cancellations.
 
 ---
 
-### 🚀 Roadmap Update
-- **Next Phase:** **Appointment System.** We will implement the booking logic where **Service.duration** and **Business.workingHours** will be used to calculate available slots.
-- **Current Status:** All Business and Service CRUD operations are validated and secured.
+### 📊 Implementation Details (Technical)
+- **Timezone:** All operations are normalized to **Europe/Istanbul** to ensure scheduling consistency.
+- **Precision:** Financial data (Revenue) is calculated with precision from service prices.
+- **Pagination:** Global search is optimized with **page** and **limit** parameters for high performance.
+
+---
+
+### ✅ Current Status: Production Ready
+All Business, Service, and Appointment operations are fully validated with **Zod**, documented with **OpenAPI**, and integrated with **Prisma** for persistent storage.
 `;
 
 export const getBusinessSpec = () => {
