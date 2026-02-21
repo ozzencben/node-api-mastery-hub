@@ -12,6 +12,7 @@ import {
   getBusinessSpec,
 } from "./core/lib/swagger";
 
+import DiscoveryRoutes from "./modules/discovery/discovery.routes";
 import UserRoutes from "./modules/user/user.routes";
 import FinanceRoutes from "./modules/finance/finance.routes";
 import RecurringFrequencyRoutes from "./modules/finance/recurringTransaction.routes";
@@ -65,6 +66,7 @@ app.use(
 );
 
 // Routes
+app.use("/api/discovery", DiscoveryRoutes);
 app.use("/api/users", UserRoutes);
 app.use("/api/finances", FinanceRoutes);
 app.use("/api/recurring-transactions", RecurringFrequencyRoutes);
