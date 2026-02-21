@@ -40,17 +40,58 @@ financeRegistry.registerPath({
       description: "Transaction created successfully",
       content: {
         "application/json": {
-          schema: z.object({
-            message: z
-              .string()
-              .openapi({ example: "Transaction created successfully" }),
-            data: TransactionSchema,
-          }),
+          schema: {
+            type: "object",
+            properties: {
+              success: { type: "boolean", example: true },
+              message: {
+                type: "string",
+                example: "Transaction recorded successfully",
+              },
+              data: { $ref: "#/components/schemas/Transaction" }, // TransactionSchema referansın
+            },
+          },
+        },
+      },
+    },
+    "400": {
+      description:
+        "Validation Error (e.g., Invalid category or negative amount)",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              success: { type: "boolean", example: false },
+              message: {
+                type: "string",
+                example: "Invalid category for transaction type INCOME",
+              },
+            },
+          },
+        },
+      },
+    },
+    "404": {
+      description: "User not found",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              success: { type: "boolean", example: false },
+              message: {
+                type: "string",
+                example: "The specified User ID does not exist",
+              },
+            },
+          },
         },
       },
     },
   },
 });
+
 router.post("/:userId", validate(createTransactionSchema), createTransaction);
 
 // getTransactions /api/finances/{userId} GET
@@ -98,6 +139,46 @@ financeRegistry.registerPath({
         },
       },
     },
+    "400": {
+      description: "Validation error (Invalid query params)",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z
+              .string()
+              .openapi({ example: "Invalid page or limit parameter" }),
+            status: z.number().openapi({ example: 400 }),
+          }),
+        },
+      },
+    },
+    "404": {
+      description: "User not found",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z.string().openapi({
+              example: "The record you are looking for was not found.",
+            }),
+            status: z.number().openapi({ example: 404 }),
+          }),
+        },
+      },
+    },
+    "500": {
+      description: "Internal Server Error",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z.string().openapi({ example: "Internal Server Error" }),
+            status: z.number().openapi({ example: 500 }),
+          }),
+        },
+      },
+    },
   },
 });
 router.get("/:userId", validate(getTransactionsSchema), getTransactions);
@@ -117,9 +198,38 @@ financeRegistry.registerPath({
       content: {
         "application/json": {
           schema: z.object({
+            success: z.boolean().openapi({ example: true }),
             message: z
               .string()
               .openapi({ example: "Transaction deleted successfully" }),
+          }),
+        },
+      },
+    },
+    "404": {
+      description: "Transaction or User not found",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z
+              .string()
+              .openapi({
+                example: "The record you are looking for was not found.",
+              }),
+            status: z.number().openapi({ example: 404 }),
+          }),
+        },
+      },
+    },
+    "500": {
+      description: "Internal Server Error",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z.string().openapi({ example: "Internal Server Error" }),
+            status: z.number().openapi({ example: 500 }),
           }),
         },
       },
@@ -154,10 +264,45 @@ financeRegistry.registerPath({
       content: {
         "application/json": {
           schema: z.object({
-            message: z
-              .string()
-              .openapi({ example: "Transaction updated successfully" }),
+            success: z.boolean().openapi({ example: true }),
+            message: z.string().openapi({ example: "Transaction updated successfully" }),
             data: TransactionSchema,
+          }),
+        },
+      },
+    },
+    "400": {
+      description: "Validation error or invalid update data",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z.string().openapi({ example: "Invalid category or transaction data" }),
+            status: z.number().openapi({ example: 400 }),
+          }),
+        },
+      },
+    },
+    "404": {
+      description: "Transaction or User not found",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z.string().openapi({ example: "The record you are looking for was not found." }),
+            status: z.number().openapi({ example: 404 }),
+          }),
+        },
+      },
+    },
+    "500": {
+      description: "Internal Server Error",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z.string().openapi({ example: "Internal Server Error" }),
+            status: z.number().openapi({ example: 500 }),
           }),
         },
       },

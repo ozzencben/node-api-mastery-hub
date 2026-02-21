@@ -41,6 +41,12 @@ export const getUserSpec = () => {
 
 // FINANCE SPECIFICATION
 const apiDescription = [
+  "## ⚠️ IMPORTANT: PREREQUISITE FOR TESTING",
+  "> **Attention:** To test the endpoints in this module, a valid **userId** is required in the database.",
+  `> If you haven't created a user yet, please generate one here first: [User API Specification](${renderUrl}/api-docs/users)`,
+  "",
+  "---",
+  "",
   "## 💰 Finance & Automation Management API (v1.0)",
   "Welcome to the high-performance Finance Management API. This system is engineered to provide users with a robust framework for tracking personal finances and automating recurring wealth management with mathematical precision.",
   "",
@@ -110,6 +116,13 @@ export const getFinanceSpec = () => {
 
 // BUSINESS SPECIFICATION
 export const businessDesc = `
+## ⚠️ IMPORTANT: PREREQUISITE FOR TESTING
+> **Attention:** All business operations, service definitions, and appointment scheduling are linked to a specific user.
+> You must provide a valid **x-user-id** in the request headers to proceed.
+> If you don't have a user ID yet, please create one first: [User API Specification](${renderUrl}/api-docs/users)
+
+---
+
 ## 🏢 Advanced Business & Appointment Engine
 
 This module serves as the core engine for service-based businesses. It handles everything from **Business Management** and **Service Definitions** to **Smart Appointment Scheduling** and **Admin Insights**.

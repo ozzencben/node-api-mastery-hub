@@ -36,13 +36,22 @@ app.use(requestLogger);
 // Swagger Routess
 
 // /api-docs/users
+// 1. Önce JSON endpoint'ini en başa, sade bir şekilde koyalım
+app.get("/users-spec.json", (req, res) => {
+  res.json(getUserSpec());
+});
+
+// 2. Swagger UI'ı bu JSON'a bağlayalım
 app.use(
   "/api-docs/users",
   swaggerUi.serve,
-  (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
     const spec = getUserSpec();
-    swaggerUi.setup(spec)(req, res, next);
-  },
+    // swaggerOptions içinde artık yeni oluşturduğumuz temiz yolu veriyoruz
+    return res.send(swaggerUi.generateHTML(spec, {
+      swaggerOptions: { url: "/users-spec.json" }
+    }));
+  }
 );
 
 // /api-docs/finances

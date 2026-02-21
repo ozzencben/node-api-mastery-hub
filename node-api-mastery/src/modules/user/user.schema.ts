@@ -8,8 +8,9 @@ export const UserSchema = userRegistry.register(
       .string()
       .uuid()
       .openapi({ example: "123e4567-e89b-12d3-a456-426614174000" }),
-    name: z.string().min(3).openapi({ example: "Ben Özenç" }),
+    name: z.string().min(3).openapi({ example: "Özenç Donmezer" }),
     email: z.string().email().openapi({ example: "ozenc@test.com" }),
+    phone: z.string().min(10).max(15).openapi({ example: "05551112233" }),
     createdAt: z.date().openapi({ example: "2026-02-19T10:00:00Z" }),
   }),
 );
@@ -39,5 +40,13 @@ export const createUserSchema = z.object({
       .openapi({
         example: "ozzenc@example.com",
       }),
+    phone: z
+      .string()
+      .min(1, "Phone number is required")
+      .min(10, "Phone number must be at least 10 characters")
+      .max(15, "Phone number must be at most 15 characters")
+      .openapi({ example: "555-555-5555" }),
   }),
 });
+
+userRegistry.register("CreateUserInput", createUserSchema.shape.body);

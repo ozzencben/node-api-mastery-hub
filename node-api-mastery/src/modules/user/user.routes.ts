@@ -14,9 +14,10 @@ userRegistry.registerPath({
   tags: ["User"],
   request: {
     body: {
+      description: "User registration details",
       content: {
         "application/json": {
-          schema: createUserSchema.shape.body,
+          schema: { $ref: "#/components/schemas/CreateUserInput" },
         },
       },
     },
@@ -27,13 +28,33 @@ userRegistry.registerPath({
       content: {
         "application/json": {
           schema: {
-            $ref: "#/components/schemas/User",
+            type: "object",
+            properties: {
+              success: { type: "boolean", example: true },
+              message: { type: "string", example: "User created successfully" },
+              data: { $ref: "#/components/schemas/User" } // Başarılı olduğunda dönen veri
+            },
+          },
+        },
+      },
+    },
+    "400": {
+      description: "Validation failed or user already exists",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              success: { type: "boolean", example: false },
+              message: { type: "string", example: "Email already in use or invalid input data" },
+            },
           },
         },
       },
     },
   },
 });
+
 router.post("/", validate(createUserSchema), createUser);
 
 // getUser /api/users GET
@@ -44,21 +65,43 @@ userRegistry.registerPath({
   tags: ["User"],
   responses: {
     "200": {
-      description: "List of users",
+      description: "List of users retrieved successfully",
       content: {
         "application/json": {
           schema: {
             type: "object",
             properties: {
-              users: {
-                type: "array",
-                items: {
-                  $ref: "#/components/schemas/User",
+              success: { type: "boolean", example: true },
+              message: { type: "string", example: "Users retrieved successfully" },
+              data: {
+                type: "object",
+                properties: {
+                  users: {
+                    type: "array",
+                    items: {
+                      $ref: "#/components/schemas/User",
+                    },
+                  },
+                  total: {
+                    type: "number",
+                    example: 1,
+                  },
                 },
               },
-              total: {
-                type: "number",
-              },
+            },
+          },
+        },
+      },
+    },
+    "500": {
+      description: "Internal Server Error",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              success: { type: "boolean", example: false },
+              message: { type: "string", example: "An error occurred while fetching users" },
             },
           },
         },
@@ -66,6 +109,7 @@ userRegistry.registerPath({
     },
   },
 });
+
 router.get("/", validate(getUserQuerySchema), getUser);
 
 export default router;

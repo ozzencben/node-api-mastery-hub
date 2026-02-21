@@ -69,8 +69,59 @@ businnessRegistry.registerPath({
     headers: createBusinessHeaderSchema,
   },
   responses: {
-    201: {
+    "201": {
       description: "Business created successfully",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: true }),
+            message: z
+              .string()
+              .openapi({ example: "Business created successfully" }),
+            data: z.any(), // Buraya istersen BusinessSchema'nı koyabilirsin
+          }),
+        },
+      },
+    },
+    "400": {
+      description: "Validation error or business already exists",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z
+              .string()
+              .openapi({ example: "This business name is already in use." }),
+            status: z.number().openapi({ example: 400 }),
+          }),
+        },
+      },
+    },
+    "401": {
+      description: "Unauthorized - Missing or invalid userId in headers",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z
+              .string()
+              .openapi({ example: "User ID is required in headers" }),
+            status: z.number().openapi({ example: 401 }),
+          }),
+        },
+      },
+    },
+    "500": {
+      description: "Internal Server Error",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z.string().openapi({ example: "Internal Server Error" }),
+            status: z.number().openapi({ example: 500 }),
+          }),
+        },
+      },
     },
   },
 });
@@ -86,8 +137,59 @@ businnessRegistry.registerPath({
     headers: getBusinessRequestSchema.shape.headers,
   },
   responses: {
-    200: {
+    "200": {
       description: "Business retrieved successfully",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: true }),
+            message: z
+              .string()
+              .openapi({ example: "Business details fetched successfully" }),
+            data: z.any(), // Buraya varsa BusinessSchema objeni koyabilirsin
+          }),
+        },
+      },
+    },
+    "401": {
+      description: "Unauthorized - Missing user identification in headers",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z
+              .string()
+              .openapi({ example: "User ID is required in headers" }),
+            status: z.number().openapi({ example: 401 }),
+          }),
+        },
+      },
+    },
+    "404": {
+      description: "Business not found for this user",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z.string().openapi({
+              example: "No business found associated with this user.",
+            }),
+            status: z.number().openapi({ example: 404 }),
+          }),
+        },
+      },
+    },
+    "500": {
+      description: "Internal Server Error",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z.string().openapi({ example: "Internal Server Error" }),
+            status: z.number().openapi({ example: 500 }),
+          }),
+        },
+      },
     },
   },
 });
@@ -111,8 +213,73 @@ businnessRegistry.registerPath({
     params: updateBusinessBodySchema.shape.params,
   },
   responses: {
-    200: {
+    "200": {
       description: "Business updated successfully",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: true }),
+            message: z
+              .string()
+              .openapi({ example: "Business updated successfully" }),
+            data: z.any(), // Varsa BusinessSchema'nı buraya gömebilirsin
+          }),
+        },
+      },
+    },
+    "400": {
+      description: "Validation error (Invalid body data or params)",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z
+              .string()
+              .openapi({ example: "Invalid data provided for update" }),
+            status: z.number().openapi({ example: 400 }),
+          }),
+        },
+      },
+    },
+    "401": {
+      description: "Unauthorized - Missing user identification in headers",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z
+              .string()
+              .openapi({ example: "User ID is required in headers" }),
+            status: z.number().openapi({ example: 401 }),
+          }),
+        },
+      },
+    },
+    "404": {
+      description: "Business not found",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z.string().openapi({
+              example: "The business you are trying to update was not found.",
+            }),
+            status: z.number().openapi({ example: 404 }),
+          }),
+        },
+      },
+    },
+    "500": {
+      description: "Internal Server Error",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z.string().openapi({ example: "Internal Server Error" }),
+            status: z.number().openapi({ example: 500 }),
+          }),
+        },
+      },
     },
   },
 });
@@ -133,8 +300,59 @@ businnessRegistry.registerPath({
     params: deleteBusinessRequestSchema.shape.params,
   },
   responses: {
-    200: {
+    "200": {
       description: "Business deleted successfully",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: true }),
+            message: z.string().openapi({
+              example: "Business and associated data deleted successfully",
+            }),
+          }),
+        },
+      },
+    },
+    "401": {
+      description: "Unauthorized - Missing user identification in headers",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z
+              .string()
+              .openapi({ example: "User ID is required in headers" }),
+            status: z.number().openapi({ example: 401 }),
+          }),
+        },
+      },
+    },
+    "404": {
+      description: "Business not found",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z.string().openapi({
+              example:
+                "The business record you are trying to delete was not found.",
+            }),
+            status: z.number().openapi({ example: 404 }),
+          }),
+        },
+      },
+    },
+    "500": {
+      description: "Internal Server Error",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z.string().openapi({ example: "Internal Server Error" }),
+            status: z.number().openapi({ example: 500 }),
+          }),
+        },
+      },
     },
   },
 });
@@ -156,13 +374,70 @@ businnessRegistry.registerPath({
     query: getBusinessAppointmentsSchema.shape.query,
   },
   responses: {
-    200: {
+    "200": {
       description: "Appointments retrieved successfully",
       content: {
         "application/json": {
           schema: z.object({
-            success: z.boolean(),
+            success: z.boolean().openapi({ example: true }),
+            message: z
+              .string()
+              .openapi({ example: "Appointments fetched successfully" }),
             data: z.array(appointmentResponseSchema),
+          }),
+        },
+      },
+    },
+    "400": {
+      description: "Validation error (Invalid query or params)",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z
+              .string()
+              .openapi({ example: "Invalid date range or business ID format" }),
+            status: z.number().openapi({ example: 400 }),
+          }),
+        },
+      },
+    },
+    "401": {
+      description: "Unauthorized - Missing user identification in headers",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z
+              .string()
+              .openapi({ example: "User ID is required in headers" }),
+            status: z.number().openapi({ example: 401 }),
+          }),
+        },
+      },
+    },
+    "404": {
+      description: "Business or Appointments not found",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z
+              .string()
+              .openapi({ example: "No appointments found for this business." }),
+            status: z.number().openapi({ example: 404 }),
+          }),
+        },
+      },
+    },
+    "500": {
+      description: "Internal Server Error",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z.string().openapi({ example: "Internal Server Error" }),
+            status: z.number().openapi({ example: 500 }),
           }),
         },
       },
@@ -193,8 +468,73 @@ businnessRegistry.registerPath({
     params: updateAppointmentStatusSchema.shape.params,
   },
   responses: {
-    200: {
+    "200": {
       description: "Appointment status updated successfully",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: true }),
+            message: z
+              .string()
+              .openapi({ example: "Appointment status changed successfully" }),
+            data: z.any(), // Buraya istersen güncellenmiş randevu şemasını ekleyebilirsin
+          }),
+        },
+      },
+    },
+    "400": {
+      description: "Validation error (Invalid status value or IDs)",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z
+              .string()
+              .openapi({ example: "Invalid status value provided" }),
+            status: z.number().openapi({ example: 400 }),
+          }),
+        },
+      },
+    },
+    "401": {
+      description: "Unauthorized - Missing user identification in headers",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z
+              .string()
+              .openapi({ example: "User ID is required in headers" }),
+            status: z.number().openapi({ example: 401 }),
+          }),
+        },
+      },
+    },
+    "404": {
+      description: "Appointment or Business not found",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z.string().openapi({
+              example: "The specific appointment record was not found.",
+            }),
+            status: z.number().openapi({ example: 404 }),
+          }),
+        },
+      },
+    },
+    "500": {
+      description: "Internal Server Error",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z.string().openapi({ example: "Internal Server Error" }),
+            status: z.number().openapi({ example: 500 }),
+          }),
+        },
+      },
     },
   },
 });
@@ -221,8 +561,59 @@ businnessRegistry.registerPath({
     params: getBusinessDashboardSchema.shape.params,
   },
   responses: {
-    200: {
+    "200": {
       description: "Business dashboard retrieved successfully",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: true }),
+            message: z.string().openapi({
+              example: "Dashboard statistics fetched successfully",
+            }),
+            data: z.any(), // Dashboard verilerinin (stats, counts vb.) olduğu şema
+          }),
+        },
+      },
+    },
+    "401": {
+      description: "Unauthorized - Missing user identification in headers",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z
+              .string()
+              .openapi({ example: "User ID is required in headers" }),
+            status: z.number().openapi({ example: 401 }),
+          }),
+        },
+      },
+    },
+    "404": {
+      description: "Business not found",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z.string().openapi({
+              example: "Business records not found for dashboard generation.",
+            }),
+            status: z.number().openapi({ example: 404 }),
+          }),
+        },
+      },
+    },
+    "500": {
+      description: "Internal Server Error",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z.string().openapi({ example: "Internal Server Error" }),
+            status: z.number().openapi({ example: 500 }),
+          }),
+        },
+      },
     },
   },
 });
@@ -242,8 +633,59 @@ businnessRegistry.registerPath({
     query: getBusinessesByUserRequestSchema.shape.query,
   },
   responses: {
-    200: {
+    "200": {
       description: "Businesses retrieved successfully",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: true }),
+            message: z
+              .string()
+              .openapi({ example: "Businesses listed successfully" }),
+            data: z.array(z.any()), // Buraya BusinessSchema objeni array içinde koyabilirsin
+          }),
+        },
+      },
+    },
+    "400": {
+      description: "Validation error (Invalid query parameters)",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z
+              .string()
+              .openapi({ example: "User ID is required in query parameters" }),
+            status: z.number().openapi({ example: 400 }),
+          }),
+        },
+      },
+    },
+    "404": {
+      description: "No businesses found for this user",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z.string().openapi({
+              example: "No businesses found associated with this user.",
+            }),
+            status: z.number().openapi({ example: 404 }),
+          }),
+        },
+      },
+    },
+    "500": {
+      description: "Internal Server Error",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z.string().openapi({ example: "Internal Server Error" }),
+            status: z.number().openapi({ example: 500 }),
+          }),
+        },
+      },
     },
   },
 });
@@ -263,8 +705,59 @@ businnessRegistry.registerPath({
     params: getBusinessByIdRequestSchema.shape.params,
   },
   responses: {
-    200: {
+    "200": {
       description: "Business retrieved successfully",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: true }),
+            message: z
+              .string()
+              .openapi({ example: "Business details retrieved successfully" }),
+            data: z.any(), // Buraya BusinessSchema objeni yerleştirebilirsin
+          }),
+        },
+      },
+    },
+    "400": {
+      description: "Validation error (Invalid businessId format)",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z
+              .string()
+              .openapi({ example: "Invalid business ID format" }),
+            status: z.number().openapi({ example: 400 }),
+          }),
+        },
+      },
+    },
+    "404": {
+      description: "Business not found",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z.string().openapi({
+              example: "The business you are looking for was not found.",
+            }),
+            status: z.number().openapi({ example: 404 }),
+          }),
+        },
+      },
+    },
+    "500": {
+      description: "Internal Server Error",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z.string().openapi({ example: "Internal Server Error" }),
+            status: z.number().openapi({ example: 500 }),
+          }),
+        },
+      },
     },
   },
 });
@@ -292,8 +785,59 @@ businnessRegistry.registerPath({
     headers: createServiceHeaderSchema,
   },
   responses: {
-    201: {
+    "201": {
       description: "Service created successfully",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: true }),
+            message: z
+              .string()
+              .openapi({ example: "Service created successfully" }),
+            data: z.any(), // Varsa ServiceSchema'nı buraya ekleyebilirsin
+          }),
+        },
+      },
+    },
+    "400": {
+      description: "Validation error (Invalid service data)",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z
+              .string()
+              .openapi({ example: "Service name and price are required" }),
+            status: z.number().openapi({ example: 400 }),
+          }),
+        },
+      },
+    },
+    "401": {
+      description: "Unauthorized - Missing user identification in headers",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z
+              .string()
+              .openapi({ example: "User ID is required in headers" }),
+            status: z.number().openapi({ example: 401 }),
+          }),
+        },
+      },
+    },
+    "500": {
+      description: "Internal Server Error",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z.string().openapi({ example: "Internal Server Error" }),
+            status: z.number().openapi({ example: 500 }),
+          }),
+        },
+      },
     },
   },
 });
@@ -314,8 +858,59 @@ businnessRegistry.registerPath({
     headers: getServicesByBusinessRequestSchema.shape.headers,
   },
   responses: {
-    200: {
+    "200": {
       description: "Services retrieved successfully",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: true }),
+            message: z
+              .string()
+              .openapi({ example: "Services fetched successfully" }),
+            data: z.array(z.any()), // Buraya ServiceSchema array'ini koyabilirsin
+          }),
+        },
+      },
+    },
+    "401": {
+      description: "Unauthorized - Missing user identification in headers",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z
+              .string()
+              .openapi({ example: "User ID is required in headers" }),
+            status: z.number().openapi({ example: 401 }),
+          }),
+        },
+      },
+    },
+    "404": {
+      description: "No services found or business not found",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z
+              .string()
+              .openapi({ example: "No services found for this business." }),
+            status: z.number().openapi({ example: 404 }),
+          }),
+        },
+      },
+    },
+    "500": {
+      description: "Internal Server Error",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z.string().openapi({ example: "Internal Server Error" }),
+            status: z.number().openapi({ example: 500 }),
+          }),
+        },
+      },
     },
   },
 });
@@ -343,8 +938,73 @@ businnessRegistry.registerPath({
     params: updateServiceBodySchema.shape.params,
   },
   responses: {
-    200: {
+    "200": {
       description: "Service updated successfully",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: true }),
+            message: z
+              .string()
+              .openapi({ example: "Service updated successfully" }),
+            data: z.any(), // Güncellenmiş hizmet verisi
+          }),
+        },
+      },
+    },
+    "400": {
+      description: "Validation error (Invalid body data or params)",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z
+              .string()
+              .openapi({ example: "Invalid data provided for service update" }),
+            status: z.number().openapi({ example: 400 }),
+          }),
+        },
+      },
+    },
+    "401": {
+      description: "Unauthorized - Missing user identification in headers",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z
+              .string()
+              .openapi({ example: "User ID is required in headers" }),
+            status: z.number().openapi({ example: 401 }),
+          }),
+        },
+      },
+    },
+    "404": {
+      description: "Service not found",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z.string().openapi({
+              example: "The service you are trying to update was not found.",
+            }),
+            status: z.number().openapi({ example: 404 }),
+          }),
+        },
+      },
+    },
+    "500": {
+      description: "Internal Server Error",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z.string().openapi({ example: "Internal Server Error" }),
+            status: z.number().openapi({ example: 500 }),
+          }),
+        },
+      },
     },
   },
 });
@@ -365,8 +1025,58 @@ businnessRegistry.registerPath({
     params: deleteServiceRequestSchema.shape.params,
   },
   responses: {
-    200: {
+    "200": {
       description: "Service deleted successfully",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: true }),
+            message: z
+              .string()
+              .openapi({ example: "Service deleted successfully" }),
+          }),
+        },
+      },
+    },
+    "401": {
+      description: "Unauthorized - Missing user identification in headers",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z
+              .string()
+              .openapi({ example: "User ID is required in headers" }),
+            status: z.number().openapi({ example: 401 }),
+          }),
+        },
+      },
+    },
+    "404": {
+      description: "Service not found",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z.string().openapi({
+              example: "The service you are trying to delete was not found.",
+            }),
+            status: z.number().openapi({ example: 404 }),
+          }),
+        },
+      },
+    },
+    "500": {
+      description: "Internal Server Error",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z.string().openapi({ example: "Internal Server Error" }),
+            status: z.number().openapi({ example: 500 }),
+          }),
+        },
+      },
     },
   },
 });
@@ -387,14 +1097,56 @@ businnessRegistry.registerPath({
     headers: getUserAppointmentsSchema.shape.headers,
   },
   responses: {
-    200: {
-      description: "Appointments for a user",
+    "200": {
+      description: "User appointments retrieved successfully",
       content: {
         "application/json": {
           schema: z.object({
-            message: z.string(),
+            success: z.boolean().openapi({ example: true }),
+            message: z
+              .string()
+              .openapi({ example: "User appointments fetched successfully" }),
             data: z.array(appointmentResponseSchema),
-            success: z.boolean(),
+          }),
+        },
+      },
+    },
+    "401": {
+      description: "Unauthorized - User identification missing",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z
+              .string()
+              .openapi({ example: "User ID is required in headers" }),
+            status: z.number().openapi({ example: 401 }),
+          }),
+        },
+      },
+    },
+    "404": {
+      description: "No appointments found for this user",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z.string().openapi({
+              example: "No appointments found for the given user.",
+            }),
+            status: z.number().openapi({ example: 404 }),
+          }),
+        },
+      },
+    },
+    "500": {
+      description: "Internal Server Error",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z.string().openapi({ example: "Internal Server Error" }),
+            status: z.number().openapi({ example: 500 }),
           }),
         },
       },
@@ -424,23 +1176,74 @@ businnessRegistry.registerPath({
     headers: createAppointmentRequestSchema.shape.headers,
   },
   responses: {
-    201: {
+    "201": {
       description: "Appointment created successfully",
       content: {
         "application/json": {
           schema: z.object({
-            message: z.string(),
-            data: appointmentResponseSchema, // İstersen buraya tam randevu şemasını da verebilirsin
+            success: z.boolean().openapi({ example: true }),
+            message: z
+              .string()
+              .openapi({ example: "Appointment created successfully" }),
+            data: appointmentResponseSchema,
           }),
         },
       },
     },
-    400: {
+    "400": {
       description:
-        "Validation error, time slot taken, or outside working hours",
+        "Validation error (Time slot taken, outside hours, or invalid data)",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z.string().openapi({
+              example: "The selected time slot is already booked.",
+            }),
+            status: z.number().openapi({ example: 400 }),
+          }),
+        },
+      },
     },
-    404: {
+    "401": {
+      description: "Unauthorized - User identification missing",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z
+              .string()
+              .openapi({ example: "User ID is required in headers" }),
+            status: z.number().openapi({ example: 401 }),
+          }),
+        },
+      },
+    },
+    "404": {
       description: "Business or Service not found",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z.string().openapi({
+              example: "The business or service record was not found.",
+            }),
+            status: z.number().openapi({ example: 404 }),
+          }),
+        },
+      },
+    },
+    "500": {
+      description: "Internal Server Error",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z.string().openapi({ example: "Internal Server Error" }),
+            status: z.number().openapi({ example: 500 }),
+          }),
+        },
+      },
     },
   },
 });
@@ -461,22 +1264,75 @@ businnessRegistry.registerPath({
     query: appointmentAvailabilityQuerySchema,
   },
   responses: {
-    200: {
-      description: "Available slots for the given date",
+    "200": {
+      description: "Available slots for the given date retrieved successfully",
       content: {
         "application/json": {
           schema: z.object({
-            businessId: z.string(),
-            serviceId: z.string(),
-            date: z.string(),
-            timeSlots: z.array(
-              z.object({
-                time: z.string(),
-                startTime: z.string(),
-                endTime: z.string(),
-                isAvailable: z.boolean(),
+            success: z.boolean().openapi({ example: true }),
+            message: z
+              .string()
+              .openapi({ example: "Availability slots fetched successfully" }),
+            data: z.object({
+              businessId: z.string().openapi({ example: "bus_123" }),
+              serviceId: z.string().openapi({ example: "ser_456" }),
+              date: z.string().openapi({ example: "2026-02-25" }),
+              timeSlots: z.array(
+                z.object({
+                  time: z.string().openapi({ example: "10:00" }),
+                  startTime: z.string().openapi({ example: "10:00" }),
+                  endTime: z.string().openapi({ example: "10:30" }),
+                  isAvailable: z.boolean().openapi({ example: true }),
+                }),
+              ),
+            }),
+          }),
+        },
+      },
+    },
+    "400": {
+      description: "Validation error (Invalid date format or missing IDs)",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z
+              .string()
+              .openapi({ example: "Invalid businessId or date format" }),
+            status: z.number().openapi({ example: 400 }),
+          }),
+        },
+      },
+    },
+    "404": {
+      description: "Business or Service not found",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z
+              .string()
+              .openapi({
+                example:
+                  "The requested business or service could not be found.",
               }),
-            ),
+            status: z.number().openapi({ example: 404 }),
+          }),
+        },
+      },
+    },
+    "500": {
+      description: "Internal Server Error",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z
+              .string()
+              .openapi({
+                example: "Internal Server Error while calculating availability",
+              }),
+            status: z.number().openapi({ example: 500 }),
           }),
         },
       },
@@ -504,15 +1360,66 @@ businnessRegistry.registerPath({
     params: cancelAppointmentRequestSchema.shape.params,
   },
   responses: {
-    200: {
+    "200": {
       description: "Appointment cancelled successfully",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: true }),
+            message: z.string().openapi({ example: "Appointment has been cancelled successfully" }),
+          }),
+        },
+      },
     },
-    400: {
-      description:
-        "Less than 2 hours left until the appointment, or the appointment has already passed.",
+    "400": {
+      description: "Cancellation policy violation or invalid request",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z.string().openapi({ 
+              example: "Cannot cancel appointment: Less than 2 hours remaining or appointment already passed." 
+            }),
+            status: z.number().openapi({ example: 400 }),
+          }),
+        },
+      },
     },
-    404: {
+    "401": {
+      description: "Unauthorized - User identification missing",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z.string().openapi({ example: "User ID is required in headers" }),
+            status: z.number().openapi({ example: 401 }),
+          }),
+        },
+      },
+    },
+    "404": {
       description: "Appointment not found",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z.string().openapi({ example: "The appointment you are trying to cancel was not found." }),
+            status: z.number().openapi({ example: 404 }),
+          }),
+        },
+      },
+    },
+    "500": {
+      description: "Internal Server Error",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z.string().openapi({ example: "Internal Server Error during cancellation" }),
+            status: z.number().openapi({ example: 500 }),
+          }),
+        },
+      },
     },
   },
 });

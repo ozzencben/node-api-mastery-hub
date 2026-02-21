@@ -46,13 +46,57 @@ financeRegistry.registerPath({
     },
   },
   responses: {
-    201: {
+    "201": {
       description: "Recurring template created successfully",
       content: {
         "application/json": {
           schema: z.object({
-            message: z.string(),
+            success: z.boolean().openapi({ example: true }),
+            message: z.string().openapi({
+              example: "Recurring transaction created successfully",
+            }),
             newRecurringTransaction: RecurringTransactionSchema,
+          }),
+        },
+      },
+    },
+    "400": {
+      description:
+        "Validation error (e.g., Missing dayOfMonth for MONTHLY frequency)",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z.string().openapi({
+              example: "dayOfMonth is required for MONTHLY frequency",
+            }),
+            status: z.number().openapi({ example: 400 }),
+          }),
+        },
+      },
+    },
+    "404": {
+      description: "User not found",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z.string().openapi({
+              example: "The record you are looking for was not found.",
+            }),
+            status: z.number().openapi({ example: 404 }),
+          }),
+        },
+      },
+    },
+    "500": {
+      description: "Internal Server Error",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z.string().openapi({ example: "Internal Server Error" }),
+            status: z.number().openapi({ example: 500 }),
           }),
         },
       },
@@ -78,15 +122,62 @@ financeRegistry.registerPath({
     query: getRecurringTransactionsSchema.shape.query,
   },
   responses: {
-    200: {
+    "200": {
       description: "Successfully fetched transactions",
       content: {
         "application/json": {
           schema: z.object({
-            message: z.string(),
+            success: z.boolean().openapi({ example: true }),
+            message: z
+              .string()
+              .openapi({
+                example: "Recurring transactions fetched successfully",
+              }),
             data: z.array(RecurringTransactionSchema),
             summary: RecurringSummarySchema,
             meta: PaginationMetaSchema,
+          }),
+        },
+      },
+    },
+    "400": {
+      description: "Validation error (Invalid query parameters)",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z
+              .string()
+              .openapi({ example: "Invalid page or limit parameter" }),
+            status: z.number().openapi({ example: 400 }),
+          }),
+        },
+      },
+    },
+    "404": {
+      description: "User not found",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z
+              .string()
+              .openapi({
+                example: "The record you are looking for was not found.",
+              }),
+            status: z.number().openapi({ example: 404 }),
+          }),
+        },
+      },
+    },
+    "500": {
+      description: "Internal Server Error",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z.string().openapi({ example: "Internal Server Error" }),
+            status: z.number().openapi({ example: 500 }),
           }),
         },
       },
@@ -123,8 +214,57 @@ financeRegistry.registerPath({
       content: {
         "application/json": {
           schema: z.object({
-            message: z.string(),
+            success: z.boolean().openapi({ example: true }),
+            message: z
+              .string()
+              .openapi({
+                example: "Recurring transaction updated successfully",
+              }),
             data: updateRecurringTransactionSchema,
+          }),
+        },
+      },
+    },
+    "400": {
+      description: "Validation error (Invalid frequency data)",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z
+              .string()
+              .openapi({
+                example: "dayOfWeek is required for WEEKLY frequency",
+              }),
+            status: z.number().openapi({ example: 400 }),
+          }),
+        },
+      },
+    },
+    "404": {
+      description: "Recurring transaction or User not found",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z
+              .string()
+              .openapi({
+                example: "The record you are looking for was not found.",
+              }),
+            status: z.number().openapi({ example: 404 }),
+          }),
+        },
+      },
+    },
+    "500": {
+      description: "Internal Server Error",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z.string().openapi({ example: "Internal Server Error" }),
+            status: z.number().openapi({ example: 500 }),
           }),
         },
       },
@@ -152,9 +292,34 @@ financeRegistry.registerPath({
       content: {
         "application/json": {
           schema: z.object({
+            success: z.boolean().openapi({ example: true }),
             message: z.string().openapi({
               example: "Recurring transaction deleted successfully",
             }),
+          }),
+        },
+      },
+    },
+    "404": {
+      description: "Recurring transaction or User not found",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z.string().openapi({ example: "The record you are looking for was not found." }),
+            status: z.number().openapi({ example: 404 }),
+          }),
+        },
+      },
+    },
+    "500": {
+      description: "Internal Server Error",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z.string().openapi({ example: "Internal Server Error" }),
+            status: z.number().openapi({ example: 500 }),
           }),
         },
       },
@@ -166,4 +331,5 @@ router.delete(
   validate(deleteRecurringTransactionSchema),
   deleteRecurringTransaction,
 );
+
 export default router;
