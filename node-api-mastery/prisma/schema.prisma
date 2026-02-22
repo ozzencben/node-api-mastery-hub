@@ -7,6 +7,8 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// USER START
+
 model User {
   id        String @id @default(uuid())
   email     String   @unique
@@ -20,8 +22,11 @@ model User {
 
   businesses Business[]
   appointments Appointment[]
+  tasks Task[]
 }
 
+// USER END
+// -------------------------------------------------------------------
 // FINANCE START
 
 model Transaction {
@@ -151,3 +156,51 @@ enum AppointmentStatus {
 }
 
 // BUSINESS END
+// -------------------------------------------------------------------
+//TASK START
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  COMPLETED
+  ARCHIVED
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum TaskCategory {
+  WORK
+  PERSONAL
+  FINANCE
+  HEALTH
+  OTHER
+}
+
+model Task {
+  id          String       @id @default(uuid())
+  title       String
+  description String?
+  status      TaskStatus   @default(TODO)
+  priority    TaskPriority @default(MEDIUM)
+  category    TaskCategory @default(OTHER)
+  
+  // Gelecek zamanlı görevler için bitiş tarihi
+  dueDate     DateTime?
+  
+  // İlişkiler
+  userId      String
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([userId])
+  @@index([status])
+}
+
+//TASK END

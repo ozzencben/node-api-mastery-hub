@@ -5,6 +5,14 @@ const renderUrl =
 
 export const modules = [
   {
+    id: "tasks",
+    title: "Daily Tasks & Reminders",
+    description:
+      "Smart task management with priority-based tracking, overdue reminders, and dashboard statistics for daily focus.",
+    docsUrl: `${renderUrl}/api-docs/tasks`,
+    status: "Active",
+  },
+  {
     id: "business",
     title: "Business & Appointment",
     description:

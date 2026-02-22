@@ -13,6 +13,7 @@ extendZodWithOpenApi(z);
 export const userRegistry = new OpenAPIRegistry();
 export const financeRegistry = new OpenAPIRegistry();
 export const businnessRegistry = new OpenAPIRegistry();
+export const taskRegistry = new OpenAPIRegistry();
 
 const renderUrl =
   process.env.RENDER_URL || "https://node-api-mastery-hub.onrender.com";
@@ -115,7 +116,7 @@ export const getFinanceSpec = () => {
 };
 
 // BUSINESS SPECIFICATION
-export const businessDesc = `
+const businessDesc = `
 ## ⚠️ IMPORTANT: PREREQUISITE FOR TESTING
 > **Attention:** All business operations, service definitions, and appointment scheduling are linked to a specific user.
 > You must provide a valid **x-user-id** in the request headers to proceed.
@@ -179,6 +180,65 @@ export const getBusinessSpec = () => {
     info: {
       title: "Business Management API Specification",
       description: businessDesc,
+      version: "1.0.0",
+    },
+    servers: [
+      {
+        url: renderUrl,
+        description: "Production Server",
+      },
+      {
+        url: "http://localhost:5000",
+        description: "Development Server",
+      },
+    ],
+  });
+};
+
+// TASK SPECIFICATION
+export const taskDesc = `
+## 📝 Personal Task & Productivity Engine
+
+Welcome to the **Task & Reminder** module! Unlike other modules, this space is designed specifically for **you**—the API explorer. 
+
+While you test my backend capabilities, you can use this module as your personal daily planner. Create tasks, set priorities, and track your progress in real-time directly through this Swagger UI.
+
+---
+
+### 🚀 Why This Module?
+This system demonstrates how a standalone micro-service manages **Atomic Operations** and **State Lifecycle**.
+
+* **Interactive Testing:** You don't just see data; you manage your own workflow. 
+* **Logical Integrity:** Tasks follow a strict state machine (e.g., you can't complete an archived task).
+* **Data Validation:** Powered by **Zod**, ensuring that deadlines (\`dueDate\`) and priorities are always mathematically and logically sound.
+
+---
+
+### 🛠️ How to Use as Your Daily Assistant
+
+1.  **Plan Your Day:** Use \`POST /tasks\` to log your daily goals (e.g., "Review Finance API", "Submit Upwork Proposal").
+2.  **Organize:** Assign categories (\`WORK\`, \`PERSONAL\`, \`STUDY\`) and priorities.
+3.  **Track:** Use filters in \`GET /tasks\` to see only your "URGENT" tasks.
+4.  **Analyze:** Check \`GET /tasks/summary\` to see your productivity percentage for the day.
+
+---
+
+### 🛡️ Business Logic & Constraints
+- **Self-Management:** Every task is tied to your **x-user-id**. You only see and manage your own data.
+- **Smart Reminders:** The system validates ISO 8601 timestamps for \`dueDate\` to ensure global timezone compatibility.
+- **State Flow:** \`TODO\` ➔ \`IN_PROGRESS\` ➔ \`COMPLETED\`. You can also \`ARCHIVE\` tasks to keep your list clean without deleting history.
+
+---
+**Tip:** Try setting a task for 10 minutes from now and see how the status management behaves!
+`;
+
+export const getTaskSpec = () => {
+  const generator = new OpenApiGeneratorV3(taskRegistry.definitions);
+  return generator.generateDocument({
+    openapi: "3.0.0",
+    info: {
+      title: "Task & Productivity API Specification",
+      description: taskDesc,
       version: "1.0.0",
     },
     servers: [

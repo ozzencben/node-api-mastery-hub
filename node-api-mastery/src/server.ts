@@ -10,6 +10,7 @@ import {
   getFinanceSpec,
   getUserSpec,
   getBusinessSpec,
+  getTaskSpec,
 } from "./core/lib/swagger";
 
 import DiscoveryRoutes from "./modules/discovery/discovery.routes";
@@ -17,12 +18,12 @@ import UserRoutes from "./modules/user/user.routes";
 import FinanceRoutes from "./modules/finance/finance.routes";
 import RecurringFrequencyRoutes from "./modules/finance/recurringTransaction.routes";
 import BusinessRoutes from "./modules/business/business.routes";
+import TaskRoutes from "./modules/tasks/task.routes";
 
 import { errorHandler } from "./core/middlewares/errorHandler";
 import swaggerUi from "swagger-ui-express";
 
 dotenv.config();
-
 const app = express();
 
 // Middleware
@@ -33,46 +34,59 @@ app.use(express.json());
 // Logger Middleware
 app.use(requestLogger);
 
-// Swagger Routess
-
-// /api-docs/users
-// 1. Önce JSON endpoint'ini en başa, sade bir şekilde koyalım
-app.get("/users-spec.json", (req, res) => {
+// Swagger Spec and JSON Endpoint
+app.get("/specs/users-spec.json", (req, res) => {
   res.json(getUserSpec());
 });
 
-// 2. Swagger UI'ı bu JSON'a bağlayalım
-app.use(
-  "/api-docs/users",
-  swaggerUi.serve,
-  async (req: Request, res: Response) => {
-    const spec = getUserSpec();
-    // swaggerOptions içinde artık yeni oluşturduğumuz temiz yolu veriyoruz
-    return res.send(swaggerUi.generateHTML(spec, {
-      swaggerOptions: { url: "/users-spec.json" }
-    }));
-  }
-);
+app.get("/specs/finances-spec.json", (req, res) => {
+  res.json(getFinanceSpec());
+});
 
-// /api-docs/finances
-app.use(
-  "/api-docs/finances",
-  swaggerUi.serve,
-  (req: Request, res: Response, next: NextFunction) => {
-    const spec = getFinanceSpec();
-    swaggerUi.setup(spec)(req, res, next);
-  },
-);
+app.get("/specs/business-spec.json", (req, res) => {
+  res.json(getBusinessSpec());
+});
 
-// /api-docs/business
-app.use(
-  "/api-docs/business",
-  swaggerUi.serve,
-  (req: Request, res: Response, next: NextFunction) => {
-    const spec = getBusinessSpec();
-    swaggerUi.setup(spec)(req, res, next);
-  },
-);
+app.get("/specs/tasks-spec.json", (req, res) => {
+  res.json(getTaskSpec());
+});
+
+const specResolvers: Record<string, () => any> = {
+  users: getUserSpec,
+  finances: getFinanceSpec,
+  business: getBusinessSpec,
+  tasks: getTaskSpec,
+};
+
+const swaggerSetup = (specName: string) => {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    const resolver = specResolvers[specName];
+
+    if (!resolver) {
+      return res.status(404).send("Spec not found");
+    }
+
+    const spec = resolver();
+
+    return res.send(
+      swaggerUi.generateHTML(spec, {
+        swaggerOptions: {
+          url: `/specs/${specName}-spec.json`,
+        },
+      }),
+    );
+  };
+};
+
+app.use("/api-docs/users", swaggerUi.serve, swaggerSetup("users"));
+app.use("/api-docs/finances", swaggerUi.serve, swaggerSetup("finances"));
+app.use("/api-docs/business", swaggerUi.serve, swaggerSetup("business"));
+app.use("/api-docs/tasks", swaggerUi.serve, swaggerSetup("tasks"));
+
+// Health Check
+app.get("/", (req: Request, res: Response) => {
+  res.send("API-Hub is active and running!");
+});
 
 // Routes
 app.use("/api/discovery", DiscoveryRoutes);
@@ -80,14 +94,10 @@ app.use("/api/users", UserRoutes);
 app.use("/api/finances", FinanceRoutes);
 app.use("/api/recurring-transactions", RecurringFrequencyRoutes);
 app.use("/api/businesses", BusinessRoutes);
+app.use("/api/tasks", TaskRoutes);
 
 // Error Handler Middleware
 app.use(errorHandler);
-
-// Define a route
-app.get("/", (req: Request, res: Response) => {
-  res.send("Hello World!");
-});
 
 // Start cron jobs
 startCronJobs();
