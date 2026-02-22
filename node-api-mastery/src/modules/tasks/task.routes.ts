@@ -5,6 +5,8 @@ import {
   updateTask,
   deleteTask,
   taskStats,
+  getDailyFocus,
+  bulkDeleteTasks,
 } from "./tasks.controller";
 import { validate } from "../../core/middlewares/validate";
 import {
@@ -14,6 +16,7 @@ import {
   UpdateTaskSchema,
   DeleteTaskSchema,
   TaskHeaderSchema,
+  BulkDeleteTasksSchema,
 } from "./task.schema";
 import { taskRegistry } from "../../core/lib/swagger";
 import { z } from "zod";
@@ -138,6 +141,61 @@ taskRegistry.registerPath({
 });
 router.get("/", validate(GetAllTasksSchema), getAllTasks);
 
+// bulkDeleteTasks /api/tasks/bulk DELETE
+taskRegistry.registerPath({
+  method: "delete",
+  path: "/api/tasks/bulk",
+  summary: "Delete multiple tasks",
+  tags: ["Task"],
+  request: {
+    headers: BulkDeleteTasksSchema.shape.headers,
+    body: {
+      content: {
+        "application/json": {
+          schema: BulkDeleteTasksSchema.shape.body,
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: "Tasks deleted successfully.",
+      content: {
+        "application/json": {
+          schema: z.object({
+            message: z
+              .string()
+              .openapi({ example: "Tasks deleted successfully" }),
+            deletedCount: z.number().openapi({ example: 1 }),
+          }),
+        },
+      },
+    },
+    400: {
+      description: "Validation Error (Invalid or missing headers)",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z.string().openapi({ example: "x-user-id is required" }),
+            status: z.number().openapi({ example: 400 }),
+          }),
+        },
+      },
+    },
+  },
+});
+router.delete(
+  "/bulk",
+  validate(
+    z.object({
+      headers: BulkDeleteTasksSchema.shape.headers,
+      body: BulkDeleteTasksSchema.shape.body,
+    }),
+  ),
+  bulkDeleteTasks,
+);
+
 // updateTask /api/tasks/:taskId PATCH
 taskRegistry.registerPath({
   method: "patch",
@@ -258,26 +316,38 @@ taskRegistry.registerPath({
       content: {
         "application/json": {
           schema: z.object({
-            message: z.string().openapi({ example: "Task stats fetched successfully" }),
+            message: z
+              .string()
+              .openapi({ example: "Task stats fetched successfully" }),
             stats: z.object({
               total: z.number().openapi({ example: 1 }),
-              byStatus: z.array(z.object({
-                type: z.string().openapi({ example: "ARCHIVED" }),
-                count: z.number().openapi({ example: 1 })
-              })),
-              byPriority: z.array(z.object({
-                type: z.string().openapi({ example: "HIGH" }),
-                count: z.number().openapi({ example: 1 })
-              })),
-              byCategory: z.array(z.object({
-                type: z.string().openapi({ example: "WORK" }),
-                count: z.number().openapi({ example: 1 })
-              })),
+              byStatus: z.array(
+                z.object({
+                  type: z.string().openapi({ example: "ARCHIVED" }),
+                  count: z.number().openapi({ example: 1 }),
+                }),
+              ),
+              byPriority: z.array(
+                z.object({
+                  type: z.string().openapi({ example: "HIGH" }),
+                  count: z.number().openapi({ example: 1 }),
+                }),
+              ),
+              byCategory: z.array(
+                z.object({
+                  type: z.string().openapi({ example: "WORK" }),
+                  count: z.number().openapi({ example: 1 }),
+                }),
+              ),
               overdue: z.number().openapi({ example: 1 }),
-              overdueTasks: z.array(z.object({
-                title: z.string().openapi({ example: "Review API-Hub Docs" }),
-                dueDate: z.string().openapi({ example: "2026-02-01T10:00:00.000Z" })
-              }))
+              overdueTasks: z.array(
+                z.object({
+                  title: z.string().openapi({ example: "Review API-Hub Docs" }),
+                  dueDate: z
+                    .string()
+                    .openapi({ example: "2026-02-01T10:00:00.000Z" }),
+                }),
+              ),
             }),
           }),
         },
@@ -289,7 +359,9 @@ taskRegistry.registerPath({
         "application/json": {
           schema: z.object({
             success: z.boolean().openapi({ example: false }),
-            message: z.string().openapi({ example: "x-user-id: Invalid input" }),
+            message: z
+              .string()
+              .openapi({ example: "x-user-id: Invalid input" }),
             status: z.number().openapi({ example: 400 }),
           }),
         },
@@ -297,11 +369,65 @@ taskRegistry.registerPath({
     },
   },
 });
-
 router.get(
   "/stats",
   validate(z.object({ headers: TaskHeaderSchema })),
-  taskStats
+  taskStats,
+);
+
+// getDailyFocus /api/tasks/daily GET
+taskRegistry.registerPath({
+  method: "get",
+  path: "/api/tasks/daily",
+  summary: "Get tasks for today",
+  tags: ["Task"],
+  request: {
+    headers: TaskHeaderSchema,
+  },
+  responses: {
+    200: {
+      description: "Tasks for today fetched successfully.",
+      content: {
+        "application/json": {
+          schema: z.object({
+            message: z
+              .string()
+              .openapi({ example: "Bugün odaklanman gereken 3 görev var." }),
+            tasks: z.array(TaskSchema),
+          }),
+        },
+      },
+    },
+    400: {
+      description: "Validation Error (Invalid or missing headers)",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z.string().openapi({ example: "x-user-id is required" }),
+            status: z.number().openapi({ example: 400 }),
+          }),
+        },
+      },
+    },
+    500: {
+      description: "Internal Server Error",
+      content: {
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: false }),
+            message: z.string().openapi({ example: "Internal server error" }),
+            status: z.number().openapi({ example: 500 }),
+          }),
+        },
+      },
+    },
+  },
+});
+router.get(
+  "/daily",
+  validate(z.object({ headers: TaskHeaderSchema })),
+  getDailyFocus,
 );
 
 export default router;

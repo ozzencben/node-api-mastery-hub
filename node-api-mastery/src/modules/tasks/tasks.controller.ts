@@ -6,6 +6,7 @@ import {
   TaskHeaderSchema,
   TaskQuerySchema,
   UpdateTaskSchema,
+  BulkDeleteTasksSchema,
 } from "./task.schema";
 import { z } from "zod";
 
@@ -50,6 +51,7 @@ export const getAllTasks = async (
       status,
       priority,
       category,
+      search,
       page = 1,
       limit = 10,
     } = req.query as unknown as z.infer<typeof TaskQuerySchema>;
@@ -57,28 +59,39 @@ export const getAllTasks = async (
     const take = Number(limit);
     const skip = (Number(page) - 1) * take;
 
-    const tasks = await prisma.task.findMany({
-      where: {
-        userId,
-        ...(status && { status }),
-        ...(priority && { priority }),
-        ...(category && { category }),
-      },
-      skip,
-      take,
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
+    const where = {
+      userId,
+      ...(status && { status }),
+      ...(priority && { priority }),
+      ...(category && { category }),
+      ...(search && {
+        OR: [
+          { title: { contains: search, mode: "insensitive" as const } },
+          { description: { contains: search, mode: "insensitive" as const } },
+        ],
+      }),
+    };
+
+    const [tasks, totalCount] = await Promise.all([
+      prisma.task.findMany({
+        where,
+        skip,
+        take,
+        orderBy: {
+          createdAt: "desc",
+        },
+      }),
+      prisma.task.count({ where }),
+    ]);
 
     res.status(200).json({
       message: "Tasks fetched successfully",
       tasks,
       pagination: {
-        total: tasks.length,
+        total: totalCount,
         page: Number(page),
         limit: take,
-        totalPages: Math.ceil(tasks.length / take),
+        totalPages: Math.ceil(totalCount / take),
       },
     });
   } catch (error) {
@@ -234,6 +247,66 @@ export const taskStats = async (
         overdue: overdueCount,
         overdueTasks: overdueTasksDetay,
       },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getDailyFocus = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const userId = req.headers["x-user-id"] as string;
+
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const tasks = await prisma.task.findMany({
+      where: {
+        userId,
+        dueDate: {
+          gte: startOfDay,
+          lte: endOfDay,
+        },
+        status: { not: "COMPLETED" },
+      },
+      orderBy: [{ priority: "desc" }, { dueDate: "asc" }],
+    });
+
+    res.status(200).json({
+      message: tasks.length <= 0 ? "No tasks today" : "Tasks fetched",
+      tasks,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const bulkDeleteTasks = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const userId = req.headers["x-user-id"] as string;
+    const { taskIds } = req.body;
+
+    const result = await prisma.task.deleteMany({
+      where: {
+        id: { in: taskIds },
+        userId: userId,
+      },
+    });
+
+    res.status(200).json({
+      message: "Tasks deleted successfully",
+      deletedCount: result.count,
     });
   } catch (error) {
     next(error);

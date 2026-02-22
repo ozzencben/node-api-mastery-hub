@@ -53,6 +53,7 @@ export const TaskQuerySchema = z.object({
   category: z.nativeEnum(TaskCategory).optional().openapi({ example: "WORK" }),
   page: z.coerce.number().min(1).default(1).openapi({ example: 1 }),
   limit: z.coerce.number().min(1).max(100).default(10).openapi({ example: 10 }),
+  search: z.string().optional().openapi({ example: "Software" }),
 });
 
 export const CreateTaskSchema = z
@@ -96,5 +97,15 @@ export const DeleteTaskSchema = z.object({
       .string()
       .uuid()
       .openapi({ example: "123e4567-e89b-12d3-a456-426614174000" }),
+  }),
+});
+
+export const BulkDeleteTasksSchema = z.object({
+  headers: TaskHeaderSchema,
+  body: z.object({
+    taskIds: z
+      .array(z.string().uuid())
+      .min(1, "At least one task ID is required")
+      .openapi({ example: ["123e4567-e89b-12d3-a456-426614174000"] }),
   }),
 });

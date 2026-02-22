@@ -199,37 +199,40 @@ export const getBusinessSpec = () => {
 export const taskDesc = `
 ## 📝 Personal Task & Productivity Engine
 
-Welcome to the **Task & Reminder** module! Unlike other modules, this space is designed specifically for **you**—the API explorer. 
+Welcome to the **Task Management** module! This space is designed to demonstrate high-performance CRUD operations, advanced filtering, and real-time statistics.
 
-While you test my backend capabilities, you can use this module as your personal daily planner. Create tasks, set priorities, and track your progress in real-time directly through this Swagger UI.
-
----
-
-### 🚀 Why This Module?
-This system demonstrates how a standalone micro-service manages **Atomic Operations** and **State Lifecycle**.
-
-* **Interactive Testing:** You don't just see data; you manage your own workflow. 
-* **Logical Integrity:** Tasks follow a strict state machine (e.g., you can't complete an archived task).
-* **Data Validation:** Powered by **Zod**, ensuring that deadlines (\`dueDate\`) and priorities are always mathematically and logically sound.
+You can use this module as your personal daily planner while testing my backend capabilities.
 
 ---
 
-### 🛠️ How to Use as Your Daily Assistant
+### 🚀 Key Features & Capabilities
+This system demonstrates how a standalone service manages **Atomic Operations**, **State Lifecycle**, and **Complex Queries**.
 
-1.  **Plan Your Day:** Use \`POST /tasks\` to log your daily goals (e.g., "Review Finance API", "Submit Upwork Proposal").
-2.  **Organize:** Assign categories (\`WORK\`, \`PERSONAL\`, \`STUDY\`) and priorities.
-3.  **Track:** Use filters in \`GET /tasks\` to see only your "URGENT" tasks.
-4.  **Analyze:** Check \`GET /tasks/summary\` to see your productivity percentage for the day.
+* **Smart Filtering:** Use \`GET /tasks\` with pagination, search, and category/priority filters.
+* **Advanced Statistics:** Use \`GET /tasks/stats\` for a bird's-eye view of your productivity and overdue tasks.
+* **Focus Mode:** Get only what matters right now with \`GET /tasks/daily\`.
+* **Bulk Operations:** Manage large task lists efficiently with \`POST /api/tasks/bulk\` (Bulk Delete).
+* **Data Integrity:** Powered by **Zod** & **Prisma**, ensuring UUID validation and strict Enum controls.
+
+---
+
+### 🛠️ Strategic Workflow Example
+
+1.  **Set Goals:** Create tasks using \`POST /tasks\` (e.g., "Refactor Finance Module").
+2.  **Focus:** Check \`GET /tasks/daily\` every morning to see your "Today's Focus" list.
+3.  **Track Health:** Use \`GET /tasks/stats\` to identify overdue tasks before they become a problem.
+4.  **Clean Up:** Use the **Bulk Delete** feature to clear out multiple unwanted tasks in a single request.
 
 ---
 
-### 🛡️ Business Logic & Constraints
-- **Self-Management:** Every task is tied to your **x-user-id**. You only see and manage your own data.
-- **Smart Reminders:** The system validates ISO 8601 timestamps for \`dueDate\` to ensure global timezone compatibility.
-- **State Flow:** \`TODO\` ➔ \`IN_PROGRESS\` ➔ \`COMPLETED\`. You can also \`ARCHIVE\` tasks to keep your list clean without deleting history.
+### 🛡️ Business Logic & Guardrails
+-   **Multi-tenancy:** All operations are strictly isolated by your **x-user-id**. You cannot access or modify tasks belonging to other users.
+-   **Case-Insensitive Search:** The search engine finds your tasks regardless of capital letters in titles or descriptions.
+-   **Pagination:** Large data sets are served in chunks (default 10 per page) to ensure fast response times.
+-   **Time Precision:** Global ISO 8601 compatibility for \`dueDate\` ensures your deadlines are accurate across all time zones.
 
 ---
-**Tip:** Try setting a task for 10 minutes from now and see how the status management behaves!
+**Pro Tip:** Try searching for a specific keyword while filtering by 'HIGH' priority to see the power of our Prisma-driven query engine!
 `;
 
 export const getTaskSpec = () => {
