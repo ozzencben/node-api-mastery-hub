@@ -28,7 +28,18 @@ A centralized Cron Service handles background tasks like financial automation, e
 
 Explore our specialized API modules through their dedicated interactive documentation:
 
-### 🏢 Business & Appointment System (New!)
+### 📝 Task & Productivity Engine (New!)
+
+- **Description:** A high-precision system for personal task management, daily focus, and productivity tracking.
+- **Interactive Docs:** [`/api-docs/tasks`](https://node-api-mastery-hub.onrender.com/api-docs/tasks)
+- **Key Features:**
+  - **Daily Focus Engine:** Intelligent filtering that prioritizes today's tasks based on deadlines and importance.
+  - **Advanced Statistics:** Real-time dashboard showing completion rates, category distribution, and overdue task alerts.
+  - **Bulk Operations:** Highly efficient `Bulk Delete` capability to manage large lists in a single request.
+  - **Smart Search & Filters:** Case-insensitive global search with multi-parameter filtering by Status, Priority, and Category.
+  - **State Lifecycle:** Robust state machine transitions supporting `TODO`, `IN_PROGRESS`, `COMPLETED`, and `ARCHIVED` statuses.
+
+### 🏢 Business & Appointment System
 
 - **Description:** A robust engine for service-based businesses to manage bookings and daily operations.
 - **Interactive Docs:** [`/api-docs/business`](https://node-api-mastery-hub.onrender.com/api-docs/business)
